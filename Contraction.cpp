@@ -17,8 +17,9 @@ using namespace std;
 typedef vector<int> vi;
 typedef vector<vi> vvi;
 typedef vvi graph_t;
-typedef vector<forward_list<int>> vli;
-typedef pair<forward_list<int>, forward_list<int>> plili;
+typedef forward_list<int> li;
+typedef vector<li> vli;
+typedef pair<li, li> plili;
 typedef discrete_distribution<int> dist;
 
 
@@ -43,16 +44,24 @@ void print_graph(const graph_t& g) {
     }
 }
 
+void print_li(const li& l) {
+    for(auto v : l) {
+        printf("%d ", v);
+    }
+}
+
 void print_cut(const plili& cut) {
     printf("[0] ");
-    for(auto v : cut.first) {
-        printf("%d ", v);
-    }
+    print_li(cut.first);
     printf("\n[1] ");
-    for(auto v : cut.second) {
-        printf("%d ", v);
-    }
+    print_li(cut.second);
     printf("\n");
+}
+
+void print_vli(const vli& ll) {
+    for(auto i = 0; i < ll.size(); ++i) {
+        printf("[%d] ", i); print_li(ll[i]); printf("\n");
+    }
 }
 
 int graph_size(const vli& g) {
@@ -83,6 +92,10 @@ plili contraction(graph_t g) {
         }
     }
 
+#ifdef __debug
+    int iter = 1;
+#endif 
+
     // Terminates when graph contain just 2 nodes
     while(graph_size(supernodes) > 2) {
 
@@ -91,6 +104,8 @@ plili contraction(graph_t g) {
         auto i = d1(gen);
         dist d2(g[i].begin(), g[i].end());
         auto j = d2(gen);
+
+        if(i == j) continue;
 
         // O(n) Add j-column to i-th column 
         for (int k = 0; k < g.size(); ++k) {
@@ -111,6 +126,12 @@ plili contraction(graph_t g) {
 
         // O(1) update supernodes
         supernodes[i].splice_after(supernodes[i].before_begin(), supernodes[j]);
+        
+#ifdef __debug
+    printf("Iteration %d: \n", iter);
+    print_vli(supernodes);
+    iter += 1;
+#endif 
     }
 
     vi sind;
@@ -141,5 +162,4 @@ int main(int argc, char* argv[]) {
     print_graph(g);
     auto c = contraction(g);
     print_cut(c);
-
 }
