@@ -17,6 +17,14 @@
         "__bit_reference": "cpp",
         "__split_buffer": "cpp",
         "string": "cpp",
-        "string_view": "cpp"
+        "string_view": "cpp",
+        "iostream": "cpp",
+        "algorithm": "cpp",
+        "__locale": "cpp",
+        "ios": "cpp",
+        "bitset": "cpp",
+        "memory": "cpp",
+        "random": "cpp",
+        "utility": "cpp"
     }
 }
