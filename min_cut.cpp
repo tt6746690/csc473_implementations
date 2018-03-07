@@ -1,7 +1,8 @@
 /*
     Find Global Min-Cut in Undirected Graphs
-    - O(n^2) Karger's Contraction Algorithm
-    - O(n^2 (log n)^2) Karger-Stein Min Cut Algorithm 
+    - O(n^2) Karger's Contraction Algorithm outputting min cut with probability 1 / nC2
+    - O(n^4) Algorithm using Karger's algorithm outputting min cut with probability c \in \R
+    - O(n^2 (log n)^2) Karger-Stein Min Cut Algorithm outputting min cut with probability 1 / log(n)
 */
 #include "Macro.h"
 #include <numeric>
@@ -218,7 +219,7 @@ plili min_cut_rec(const graph_t& original_g, graph_t g, vi d, vli supernodes) {
     plili c1 = min_cut_rec(original_g, g, d, supernodes);
     plili c2 = min_cut_rec(original_g, g, d, supernodes);
 
-    return (cut_set_size(original_g, c1) > 
+    return (cut_set_size(original_g, c1) <=
                 cut_set_size(original_g, c2)) ? c1 : c2;
 }
 
@@ -242,6 +243,38 @@ plili karger_stein_min_cut(graph_t g) {
     return min_cut_rec(g, g, d, supernodes);
 }
 
+// O(n^4) algorithm that outputs global mincut within a constant probability
+plili naive_min_cut(graph_t g) {
+    plili min_cut;
+    int size = pow(g.size(), 2);    // m <= n^2
+    for (int i = 0; i < pow(g.size(), 2); ++i) {
+        auto cut = karger_min_cut(g);
+        if (min_cut.first.empty() && min_cut.second.empty())
+            min_cut = cut;
+        
+        if (cut_set_size(g, cut) < size) {
+            size = cut_set_size(g, cut);
+            min_cut = cut;
+        }
+    }
+    return min_cut;
+}
+
+
+
+
+// O(n^2) Checks if c1 = (s1, s1') \subseteq c2 = (s2, s2')
+bool cut_equal(const plili& c1, const plili& c2) {
+    for (auto v : c1.first) {
+        if (find(c2.first.begin(), c2.first.end(), v) == c2.first.end()) 
+            return false;
+    }
+    for (auto v : c1.second) {
+        if (find(c2.second.begin(), c2.second.end(), v) == c2.second.end()) 
+            return false;
+    }
+    return true;
+}
 
 
 int main(int argc, char* argv[]) {
@@ -258,24 +291,24 @@ int main(int argc, char* argv[]) {
         {0, 0, 0, 0, 1, 1, 1, 0},
     };
 
-    li s1 = {4,5,6,7}, s2 = {0,1,2,3};
-    plili mincut1 = {s1, s2}, 
-          mincut2 = {s2, s1};
+    plili mincut = {{0,1,2,3}, {4,5,6,7}};
 
     printf("graph:\n");
     print_graph(g);
     printf("min-cut:\n");
-    print_cut(mincut1);
+    print_cut(mincut);
 
-    auto c = karger_stein_min_cut(g);
 
     double num_output_correct = 0, num_ran = 1000;
     for (int i = 0; i < num_ran; ++i) {
-        auto c = karger_min_cut(g);
+        auto c = karger_stein_min_cut(g);  
         printf("output:\n");
         print_cut(c);
-        if (c == mincut1 || c == mincut2)
+        if (cut_equal(c, mincut))
             num_output_correct += 1;
     }
-    printf("success probability %f\n", num_output_correct / num_ran);
+    printf("success probability %f\n", num_output_correct / num_ran); 
+    // ~ 1 for naive min cut 
+    // ~ 0.42 for karger min cut
+    // ~ 0.65 for karger-stein min cut 
 }
