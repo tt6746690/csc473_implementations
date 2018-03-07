@@ -25,6 +25,9 @@
         "bitset": "cpp",
         "memory": "cpp",
         "random": "cpp",
-        "utility": "cpp"
+        "utility": "cpp",
+        "chrono": "cpp",
+        "limits": "cpp",
+        "ratio": "cpp"
     }
 }

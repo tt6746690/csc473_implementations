@@ -4,4 +4,5 @@
 > Implementations of algorithms seen in CSC473 - Advanced Algorithms
 
 
-+ Contraction Algorithm for finding global minimum cut 
++ [Karger's Algorithm](https://en.wikipedia.org/wiki/Karger%27s_algorithm)
++ [Karger-Stein Min Cut Algorithm](https://en.wikipedia.org/wiki/Karger%27s_algorithm)
