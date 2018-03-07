@@ -1,14 +1,15 @@
 COMPILER = clang++
 CXXFLAGS = -std=c++1z -stdlib=libc++ -Wall
+OUTFILES = min_cut
 
-all : algos
+all : $(OUTFILES)
 
-algos: Contraction.o
+%: %.o
 	$(COMPILER) $(CXXFLAGS) -o algos $^
 
-%.o : %.c Graph.h 
+%.o : %.c 
 	$(COMPILER) $(CXXFLAGS) -c $<
 
 
 clean:
-	rm ./*.o algos log
+	rm ./*.o $(OUTFILES) log
